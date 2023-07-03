@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GravyVrc.Chacasa.Windows (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "GravyVrc.Chacasa.Windows (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
