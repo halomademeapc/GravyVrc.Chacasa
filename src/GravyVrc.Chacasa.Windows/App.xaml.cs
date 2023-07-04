@@ -4,7 +4,6 @@ using GravyVrc.Chacasa.Windows.Data;
 using GravyVrc.Chacasa.Windows.Hass;
 using GravyVrc.Chacasa.Windows.Templates;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -49,7 +48,6 @@ namespace GravyVrc.Chacasa.Windows
 
             builder.Services.AddMemoryCache();
             builder.Services.AddSingleton<IHassProvider, HassProvider>();
-            builder.Services.AddSingleton<HomeStateService>();
             builder.Services.AddDbContext<SettingsContext>(opts => opts.UseSqlite("Data Source=chacasa.db"));
             builder.Services.AddTransient<SettingsService>();
             builder.Services.AddSingleton<HomeTemplateService>();

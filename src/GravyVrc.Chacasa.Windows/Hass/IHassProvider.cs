@@ -1,12 +1,13 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using HassClient.WS;
+using Simple.HAApi;
 
 namespace GravyVrc.Chacasa.Windows.Hass;
 
 public interface IHassProvider
 {
-    Task<HassWSApi> GetClientAsync(CancellationToken cancellationToken = default);
+    Task<Instance> GetClientAsync(CancellationToken cancellationToken = default);
 
     Task<bool> ValidateConfigurationAsync(HassConfiguration configuration, CancellationToken cancellationToken = default);
 

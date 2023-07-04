@@ -19,16 +19,15 @@ namespace GravyVrc.Chacasa.Windows
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        private readonly HomeStateService _stateService;
         private readonly PageService _pageService;
         private CancellationTokenSource? _cancellationTokenSource;
+        private const int MaxScrollback = 50;
 
         public MainWindow()
         {
             InitializeComponent();
             var db = App.Services.GetRequiredService<SettingsContext>();
             db.Database.EnsureCreated();
-            _stateService = App.Services.GetRequiredService<HomeStateService>();
             _pageService = App.Services.GetRequiredService<PageService>();
 
             ChatService.MessageSent += OnMessageSend;
@@ -38,7 +37,10 @@ namespace GravyVrc.Chacasa.Windows
         {
             DispatcherQueue.TryEnqueue(() =>
             {
-                (Log.DataContext as HomeViewModel)!.Messages.Add(message);
+                var model = Log.DataContext as HomeViewModel;
+                model!.Messages.Add(message);
+                if (model.Messages.Count > MaxScrollback)
+                    model.Messages.RemoveAt(0);
             });
         }
 
@@ -51,7 +53,7 @@ namespace GravyVrc.Chacasa.Windows
                 {
                     Id = 1,
                     RefreshPeriod = null,
-                    Duration = TimeSpan.FromSeconds(16),
+                    Duration = TimeSpan.FromSeconds(10),
                     Label = "CO2",
                     Order = 1,
                     Template = @"Testing something :) CO2 level: {{states('sensor.senseair_co2_value')}}ppm"
@@ -60,10 +62,42 @@ namespace GravyVrc.Chacasa.Windows
                 {
                     Id = 0,
                     RefreshPeriod = TimeSpan.FromSeconds(2),
-                    Duration = TimeSpan.FromSeconds(16),
+                    Duration = TimeSpan.FromSeconds(10),
                     Label = "Power",
                     Order = 0,
                     Template = @"Hello from home assistant! Grid consumption: {{states('sensor.total_power')}}W"
+                },
+                new()
+                {
+                    Id = 3,
+                    Duration = TimeSpan.FromSeconds(10),
+                    Label = "Power",
+                    Order = 2,
+                    Template = @"More testing! Kitchen luminance: {{states('sensor.kitchen_sensor_illuminance')}}lm"
+                },
+                new()
+                {
+                    Id = 4,
+                    Duration = TimeSpan.FromSeconds(10),
+                    Label = "PM25",
+                    Order = 4,
+                    Template = @"It's working :D Garage PM25: {{states('sensor.particulate_matter_2_5um_concentration_2')}}µg/m³"
+                },
+                new()
+                {
+                    Id = 4,
+                    Duration = TimeSpan.FromSeconds(10),
+                    Label = "Office",
+                    Order = 4,
+                    Template = @"Office power draw: {{states('sensor.office_power')}}W"
+                },
+                new()
+                {
+                    Id = 4,
+                    Duration = TimeSpan.FromSeconds(10),
+                    Label = "Office",
+                    Order = 4,
+                    Template = @"🎵 {{state_attr('media_player.spotify_alex_griffith', 'media_title')}} - {{state_attr('media_player.spotify_alex_griffith', 'media_artist')}}"
                 }
             };
             StartButton.IsEnabled = false;
@@ -83,8 +117,7 @@ namespace GravyVrc.Chacasa.Windows
 
         private void TestButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var ctx = Log.DataContext as HomeViewModel;
-            ctx.Messages.Add("this is a test");
+            ChatService.SendMessage("UI test");
         }
     }
 }

@@ -1,7 +1,8 @@
-﻿using System.Threading;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using GravyVrc.Chacasa.Windows.Data;
-using HassClient.WS;
+using Simple.HAApi;
 
 namespace GravyVrc.Chacasa.Windows.Hass;
 
@@ -9,14 +10,14 @@ public class HassProvider : IHassProvider
 {
     private HassConfiguration? _configuration;
     private readonly SettingsService _settings;
-    private HassWSApi _api;
+    private Instance _api;
 
     public HassProvider(SettingsService settings)
     {
         _settings = settings;
     }
 
-    public async Task<HassWSApi> GetClientAsync(CancellationToken cancellationToken = default) =>
+    public async Task<Instance> GetClientAsync(CancellationToken cancellationToken = default) =>
         _api ??= await CreateNewClientAsync(cancellationToken);
 
     public async Task<bool> ValidateConfigurationAsync(HassConfiguration configuration,
@@ -24,12 +25,8 @@ public class HassProvider : IHassProvider
     {
         try
         {
-            HassWSApi api = new();
-            var connectionParameters =
-                ConnectionParameters.CreateFromInstanceBaseUrl(configuration.Url, configuration.Token);
-            await api.ConnectAsync(connectionParameters, cancellationToken: cancellationToken);
-            await api.CloseAsync(CancellationToken.None);
-            return true;
+            var instance = new Instance(new(configuration.Url), configuration.Token);
+            return await instance.CheckRunningAsync();
         }
         catch
         {
@@ -45,15 +42,11 @@ public class HassProvider : IHassProvider
         _configuration = configuration;
     }
 
-    public async Task<HassWSApi> CreateNewClientAsync(CancellationToken cancellationToken = default)
+    public async Task<Instance> CreateNewClientAsync(CancellationToken cancellationToken = default)
     {
         if (_configuration is null)
             await LoadConfigurationAsync(cancellationToken);
-        HassWSApi api = new();
-        var connectionParameters =
-            ConnectionParameters.CreateFromInstanceBaseUrl(_configuration.Url, _configuration.Token);
-        await api.ConnectAsync(connectionParameters, cancellationToken: cancellationToken);
-        return api;
+        return new Instance(new Uri(_configuration!.Url), _configuration.Token);
     }
 
     private async Task LoadConfigurationAsync(CancellationToken cancellationToken = default)

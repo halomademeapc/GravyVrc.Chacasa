@@ -1,6 +1,4 @@
-﻿using BuildSoft.VRChat.Osc.Chatbox;
-using GravyVrc.Chacasa.Windows.Hass;
-using Microsoft.Extensions.DependencyInjection;
+﻿using GravyVrc.Chacasa.Windows.Hass;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -21,21 +19,29 @@ public class DisplayPage : ITemplateInput
 public class PageService
 {
     private readonly TimeSpan _defaultDuration = TimeSpan.FromSeconds(10);
+    private readonly HomeTemplateService _templateService;
 
-    public PageService()
+    public PageService(HomeTemplateService templateService)
     {
+        _templateService = templateService;
     }
 
     public async Task ShowPages(IReadOnlyList<DisplayPage> pages, CancellationToken cancellationToken)
     {
-        var currentIndex = 0;
-        while (!cancellationToken.IsCancellationRequested)
+        try
         {
-            var currentPage = pages[currentIndex];
-            await ShowRefreshingPageAsync(currentPage, cancellationToken);
+            var currentIndex = 0;
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var currentPage = pages[currentIndex];
+                await ShowRefreshingPageAsync(currentPage, cancellationToken);
 
-            currentIndex++;
-            currentIndex %= pages.Count - 1;
+                currentIndex++;
+                currentIndex %= pages.Count;
+            }
+        }
+        catch (TaskCanceledException)
+        { //expected
         }
     }
 
@@ -43,26 +49,30 @@ public class PageService
     {
         if (page.RefreshPeriod is null || page.Duration is null)
         {
-            await ShowPageAsync(page, cancellationToken).ConfigureAwait(false);
-            await Task.Delay(page.Duration ?? _defaultDuration, cancellationToken).ConfigureAwait(false);
+            await ShowPageAsync(page, cancellationToken);
+            await Task.Delay(page.Duration ?? _defaultDuration, cancellationToken);
             return;
         }
 
         var iterations = Math.Floor(page.Duration.Value / page.RefreshPeriod.Value);
         for (var i = 0; i < iterations; i++)
         {
-            await ShowPageAsync(page, cancellationToken).ConfigureAwait(false);
-            await Task.Delay(page.RefreshPeriod.Value, cancellationToken).ConfigureAwait(false);
+            await ShowPageAsync(page, cancellationToken);
+            await Task.Delay(page.RefreshPeriod.Value, cancellationToken);
         }
     }
 
-    private static async Task ShowPageAsync(ITemplateInput page, CancellationToken cancellationToken)
+    private async Task ShowPageAsync(ITemplateInput page, CancellationToken cancellationToken)
     {
         try
         {
-            var templateService = App.Services.GetRequiredService<HomeTemplateService>();
-            var rendered = await templateService.RenderTemplateAsync(page, cancellationToken);
-            ChatService.SendMessage(rendered);
+            var renderTask = _templateService.RenderTemplateAsync(page.Template, cancellationToken).ContinueWith(r => ChatService.SendMessage(r.Result), cancellationToken);
+            var timeoutTask = Task.Delay(5000, cancellationToken);
+            await Task.WhenAny(renderTask, timeoutTask);
+            if (renderTask.IsCompleted)
+                return;
+
+            ChatService.SendMessage("Template took too long to render...");
         }
         catch (Exception ex)
         {

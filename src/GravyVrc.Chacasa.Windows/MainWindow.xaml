@@ -11,21 +11,36 @@
     xmlns:system="using:System"
     mc:Ignorable="d">
 
-    <Grid RowDefinitions="Auto, *" ColumnDefinitions="*">
+    <Grid RowDefinitions="Auto, *" 
+          ColumnDefinitions="*">
         <Grid.DataContext>
             <vm:HomeViewModel />
         </Grid.DataContext>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0">
-            <Button x:Name="StartButton" Click="StartButton_OnClick">Start</Button>
-            <Button x:Name="StopButton" Click="StopButton_OnClick" IsEnabled="False">Stop</Button>
-            <Button x:Name="TestButton" Click="TestButton_OnClick">Test</Button>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" 
+                    Grid.Row="0"
+                    Padding="8"
+                    Spacing="8">
+            <Button x:Name="StartButton"
+                    Click="StartButton_OnClick">
+                Start
+            </Button>
+            <Button x:Name="StopButton"
+                    Click="StopButton_OnClick" IsEnabled="False">
+                Stop
+            </Button>
+            <Button x:Name="TestButton"
+                    Click="TestButton_OnClick">
+                Test
+            </Button>
         </StackPanel>
 
-        <ListView x:Name="Log" 
-                  Grid.Row="1" 
+        <ListView x:Name="Log"
+                  Grid.Row="1"
                   SelectionMode="None"
                   ItemsSource="{Binding Messages }">
-            
+
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView"
@@ -34,11 +49,14 @@
             </ListView.ItemsPanel>
 
             <ListView.ItemTemplate>
-                <DataTemplate x:Key="MessageViewTemplate" x:DataType="system:String">
-                    <Grid Height="Auto" Margin="4">
-                        <StackPanel MinHeight="75" Width="350" Padding="10, 0, 0, 10" CornerRadius="2">
-                            <TextBlock Text="{Binding}" Padding="0, 10, 0, 0" FontSize="20"
-                                        />
+                <DataTemplate x:Key="MessageViewTemplate"
+                              x:DataType="system:String">
+                    <Grid Height="Auto"
+                          Margin="4">
+                        <StackPanel Padding="10, 0, 0, 10"
+                                    CornerRadius="2">
+                            <TextBlock Text="{Binding}"
+                                       Padding="0, 10, 0, 0" />
                         </StackPanel>
                     </Grid>
                 </DataTemplate>

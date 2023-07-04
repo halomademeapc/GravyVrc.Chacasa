@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Simple.HAApi;
 
 namespace GravyVrc.Chacasa.Windows.Hass;
 
@@ -16,7 +17,8 @@ public class HomeTemplateService
 
     public async Task<string> RenderTemplateAsync(string input, CancellationToken cancellationToken = default)
     {
-        var api = await _apiProvider.GetClientAsync(cancellationToken);
-        return await api.RenderTemplateAsync(input, cancellationToken);
+        var instance = await _apiProvider.GetClientAsync(cancellationToken);
+        var templater = instance.Get<Simple.HAApi.Sources.Template>();
+        return await templater.RenderTemplateAsync(input);
     }
 }
