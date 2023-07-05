@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading;
 using GravyVrc.Chacasa.Windows.Data;
-using GravyVrc.Chacasa.Windows.Hass;
 using GravyVrc.Chacasa.Windows.Templates;
 using GravyVrc.Chacasa.Windows.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -81,7 +80,8 @@ namespace GravyVrc.Chacasa.Windows
                     Duration = TimeSpan.FromSeconds(10),
                     Label = "PM25",
                     Order = 4,
-                    Template = @"It's working :D Garage PM25: {{states('sensor.particulate_matter_2_5um_concentration_2')}}µg/m³"
+                    Template =
+                        @"It's working :D Garage PM25: {{states('sensor.particulate_matter_2_5um_concentration_2')}}µg/m³"
                 },
                 new()
                 {
@@ -97,7 +97,8 @@ namespace GravyVrc.Chacasa.Windows
                     Duration = TimeSpan.FromSeconds(10),
                     Label = "Office",
                     Order = 4,
-                    Template = @"🎵 {{state_attr('media_player.spotify_alex_griffith', 'media_title')}} - {{state_attr('media_player.spotify_alex_griffith', 'media_artist')}}"
+                    Template =
+                        @"🎵 {{state_attr('media_player.spotify_alex_griffith', 'media_title')}} - {{state_attr('media_player.spotify_alex_griffith', 'media_artist')}}"
                 }
             };
             StartButton.IsEnabled = false;
@@ -117,7 +118,19 @@ namespace GravyVrc.Chacasa.Windows
 
         private void TestButton_OnClick(object sender, RoutedEventArgs e)
         {
-            ChatService.SendMessage("UI test");
+            OpenConnectionSettings();
+        }
+
+        private void OpenConnectionSettings()
+        {
+            var control = new ConnectionSettingsControl();
+            var dialog = new ContentDialog()
+            {
+                XamlRoot = Content.XamlRoot,
+                Content = control
+            };
+            control.Initialize(dialog);
+            dialog.ShowAsync();
         }
     }
 }

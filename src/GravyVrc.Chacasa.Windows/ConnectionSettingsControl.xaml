@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<UserControl
+    x:Class="GravyVrc.Chacasa.Windows.ConnectionSettingsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GravyVrc.Chacasa.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto"
+          ColumnDefinitions="*"
+          RowSpacing="14">
+        <TextBox x:Name="UrlTextBox"
+                 Grid.Row="0"
+                 Header="Server URL"
+                 Width="320"
+                 PlaceholderText="http://homeassistant:8123" />
+        <TextBox x:Name="TokenTextBox"
+                 Grid.Row="1"
+                 Header="User Token"
+                 Width="320" />
+        <StackPanel x:Name="SuccessMessage"
+                    Orientation="Horizontal"
+                    Visibility="Collapsed"
+                    Grid.Row="2"
+                    Spacing="8">
+            <FontIcon Foreground="Green" Glyph="&#xE73E;" />
+            <TextBlock Foreground="Green">Connected successfully</TextBlock>
+        </StackPanel>
+        <StackPanel x:Name="FailureMessage"
+                    Orientation="Horizontal"
+                    Visibility="Collapsed"
+                    Grid.Row="2"
+                    Spacing="8">
+            <FontIcon Foreground="Red" Glyph="&#xE7BA;" />
+            <TextBlock Foreground="Red">Unable to connect</TextBlock>
+        </StackPanel>
+        <StackPanel x:Name="LoadingMessage"
+                    Orientation="Horizontal"
+                    Visibility="Collapsed"
+                    Grid.Row="2"
+                    Spacing="8">
+            <ProgressRing IsActive="True"
+                          Width="8"
+                          Height="8" />
+            <TextBlock>Checking connection...</TextBlock>
+        </StackPanel>
+        <StackPanel x:Name="IdleMessage"
+                    Orientation="Horizontal"
+                    Grid.Row="2"
+                    Spacing="8">
+            <FontIcon Foreground="Gray" Glyph="&#xE9CE;" />
+            <TextBlock Foreground="Gray">Connection has not been validated</TextBlock>
+        </StackPanel>
+        <Grid Grid.Row="3"
+              ColumnDefinitions="*, *, *"
+              ColumnSpacing="10"
+              HorizontalAlignment="Stretch">
+            <Button x:Name="TestButton"
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch"
+                    Click="Test_OnClick">
+                Test Connection
+            </Button>
+            <Button x:Name="CancelButton"
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    Click="Cancel_OnClick">
+                Cancel
+            </Button>
+            <Button x:Name="SaveButton"
+                    Grid.Column="2"
+                    HorizontalAlignment="Stretch"
+                    Click="Save_OnClick"
+                    Style="{StaticResource AccentButtonStyle}">
+                Save
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

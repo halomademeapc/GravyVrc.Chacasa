@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using HassClient.WS;
 using Simple.HAApi;
 
 namespace GravyVrc.Chacasa.Windows.Hass;
