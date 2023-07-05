@@ -1,12 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using GravyVrc.Chacasa.Windows.Data;
-using GravyVrc.Chacasa.Windows.Templates;
-using GravyVrc.Chacasa.Windows.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using GravyVrc.Chacasa.Windows.Templates;
+using GravyVrc.Chacasa.Windows.ViewModels;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -16,47 +25,18 @@ namespace GravyVrc.Chacasa.Windows
     /// <summary>
     /// An empty window that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainWindow : Window
+    public sealed partial class PageListWindow : Window
     {
-        private readonly PageService _pageService;
-        private CancellationTokenSource? _cancellationTokenSource;
-        private const int MaxScrollback = 50;
-        private bool IsRunning = false;
-        private PageListWindow? _pageListWindow;
+        private PageListViewModel ViewModel => Root.DataContext as PageListViewModel;
 
-        public MainWindow()
+        public PageListWindow()
         {
-            InitializeComponent();
-            var db = App.Services.GetRequiredService<SettingsContext>();
-            db.Database.EnsureCreated();
-            _pageService = App.Services.GetRequiredService<PageService>();
-
-            ChatService.MessageSent += OnMessageSend;
+            this.InitializeComponent();
+            LoadData();
         }
 
-        private void OnMessageSend(string message)
+        private async Task LoadData()
         {
-            DispatcherQueue.TryEnqueue(() =>
-            {
-                var model = Log.DataContext as HomeViewModel;
-                model!.Messages.Add(message);
-                if (model.Messages.Count > MaxScrollback)
-                    model.Messages.RemoveAt(0);
-            });
-        }
-
-        private void ToggleButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (!IsRunning)
-                StartButton_OnClick(sender, e);
-            else
-                StopButton_OnClick(sender, e);
-            IsRunning = !IsRunning;
-        }
-
-        private async void StartButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            _cancellationTokenSource = new CancellationTokenSource();
             var testPages = new List<DisplayPage>
             {
                 new()
@@ -112,44 +92,29 @@ namespace GravyVrc.Chacasa.Windows
                         @"🎵 {{state_attr('media_player.spotify_alex_griffith', 'media_title')}} - {{state_attr('media_player.spotify_alex_griffith', 'media_artist')}}"
                 }
             };
-            await _pageService.ShowPages(testPages, _cancellationTokenSource.Token).ConfigureAwait(false);
-        }
-
-        private void StopButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (_cancellationTokenSource is null)
-                return;
-            _cancellationTokenSource.Cancel();
-            _cancellationTokenSource = null;
-        }
-
-        private void OpenPageList()
-        {
-            _pageListWindow ??= new PageListWindow();
-            _pageListWindow.Closed += (_, _) => _pageListWindow = null;
-            _pageListWindow.Activate();
-        }
-
-        private void ConnectionButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            OpenConnectionSettings();
-        }
-
-        private void OpenConnectionSettings()
-        {
-            var control = new ConnectionSettingsControl();
-            var dialog = new ContentDialog()
+            foreach (var page in testPages)
             {
-                XamlRoot = Content.XamlRoot,
-                Content = control
-            };
-            control.Initialize(dialog);
-            dialog.ShowAsync();
+                ViewModel.Pages.Add(page);
+            }
         }
 
-        private void PagesButton_OnClick(object sender, RoutedEventArgs e)
+        private void PageList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            OpenPageList();
+            var page = e.AddedItems.FirstOrDefault();
+            Editor.DataContext = page;
+        }
+
+        private void Editor_OnRemoved(DisplayPage page)
+        {
+            ViewModel.Pages.Remove(page);
+            ViewModel.SelectedPage = null;
+        }
+
+        private void Add_OnClick(object sender, RoutedEventArgs e)
+        {
+            var page = new DisplayPage();
+            ViewModel.Pages.Add(page);
+            PageList.SelectedItem = page;
         }
     }
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<UserControl
+    x:Class="GravyVrc.Chacasa.Windows.PageEditorControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GravyVrc.Chacasa.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:templates="using:GravyVrc.Chacasa.Windows.Templates"
+    mc:Ignorable="d">
+    <UserControl.DataContext>
+        <templates:DisplayPage />
+    </UserControl.DataContext>
+    <StackPanel Orientation="Vertical" Spacing="12">
+        <TextBlock Text="{Binding DisplayLabel}"
+                   Style="{StaticResource SubtitleTextBlockStyle}" />
+        <TextBox x:Name="LabelTextBox"
+                 PlaceholderText="My Page"
+                 Header="Label"
+                 Text="{Binding Label, Mode=TwoWay}" />
+        <TextBox x:Name="TemplateTextBox"
+                 PlaceholderText="Hello, world!"
+                 Header="Template"
+                 TextWrapping="Wrap"
+                 AcceptsReturn="True"
+                 Text="{Binding Template, Mode=TwoWay}" />
+        <Slider x:Name="DurationSlider"
+                Header="Duration (ms)"
+                HorizontalAlignment="Stretch"
+                Maximum="20000"
+                StepFrequency="100"
+                ValueChanged="DurationSlider_OnValueChanged"
+                Value="{Binding Duration.TotalMilliseconds}" />
+        <CheckBox x:Name="RefreshCheckbox"
+                  Content="Refresh Value While Showing"
+                  Checked="Refresh_Checked"
+                  Unchecked="Refresh_Unchecked" />
+        <Slider x:Name="RefreshSlider"
+                Header="Refresh Interval (ms)"
+                HorizontalAlignment="Stretch"
+                Maximum="20000"
+                StepFrequency="100"
+                ValueChanged="RefreshSlider_OnValueChanged"
+                Value="{Binding Duration.TotalMilliseconds}" />
+        <Button x:Name="RemoveButton"
+                Click="RemoveButton_OnClick">
+            <local:IconButton Label="Remove" Glyph="&#xE738;" />
+        </Button>
+        <Button x:Name="TestButton">
+            <local:IconButton Label="Test" Glyph="&#xE724;" />
+        </Button>
+    </StackPanel>
+</UserControl>

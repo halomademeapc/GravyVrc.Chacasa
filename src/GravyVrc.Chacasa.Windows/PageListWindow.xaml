@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Window
+    x:Class="GravyVrc.Chacasa.Windows.PageListWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GravyVrc.Chacasa.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:templates="using:GravyVrc.Chacasa.Windows.Templates"
+    xmlns:viewModels="using:GravyVrc.Chacasa.Windows.ViewModels"
+    mc:Ignorable="d"
+    Title="Edit Pages">
+
+    <Grid x:Name="Root"
+          Padding="10"
+          RowDefinitions="Auto, *, Auto"
+          ColumnDefinitions="*"
+          RowSpacing="10">
+        <Grid.DataContext>
+            <viewModels:PageListViewModel />
+        </Grid.DataContext>
+        <TextBlock Grid.Row="0"
+                   Text="Info Pages"
+                   Margin="10"
+                   Style="{StaticResource TitleTextBlockStyle}" />
+        <Grid ColumnDefinitions=".3*, .7*"
+              ColumnSpacing="10"
+              Grid.Row="1">
+            <ListView x:Name="PageList"
+                      Grid.Column="0"
+                      ItemsSource="{Binding Pages}"
+                      SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
+                      CanReorderItems="True"
+                      SelectionMode="Single"
+                      CanDrag="True"
+                      AllowDrop="True"
+                      SelectionChanged="PageList_OnSelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="templates:DisplayPage">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="0"
+                                       Text="{x:Bind DisplayLabel, Mode=OneWay}"
+                                       x:Phase="1"
+                                       Style="{ThemeResource BaseTextBlockStyle}"
+                                       Margin="12,6,0,0" />
+                            <TextBlock Grid.Column="0"
+                                       Grid.Row="1"
+                                       Text="{x:Bind Duration, Mode=OneWay}"
+                                       x:Phase="2"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       Margin="12,0,0,6" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackPanel Grid.Column="1"
+                        Padding="16"
+                        CornerRadius="12">
+                <local:PageEditorControl x:Name="Editor"
+                                         Removed="Editor_OnRemoved"
+                                         DataContext="{Binding SelectedPage}" />
+                <StackPanel.Background>
+                    <SolidColorBrush Color="Gray" Opacity=".2"></SolidColorBrush>
+                </StackPanel.Background>
+            </StackPanel>
+        </Grid>
+        <Grid HorizontalAlignment="Stretch"
+              Grid.Row="2"
+              ColumnDefinitions="*, *">
+            <Button Grid.Column="0"
+                    Click="Add_OnClick">
+                Add Page
+            </Button>
+            <Button Grid.Column="1"
+                    Style="{StaticResource AccentButtonStyle}">
+                Save
+            </Button>
+        </Grid>
+    </Grid>
+</Window>

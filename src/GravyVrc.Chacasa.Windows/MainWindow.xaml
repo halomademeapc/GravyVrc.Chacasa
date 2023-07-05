@@ -9,9 +9,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="using:System"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Title="GravyVrc Chacasa">
 
-    <Grid RowDefinitions="Auto, *"
+    <Grid x:Name="Root"
+          RowDefinitions="Auto, *"
           ColumnDefinitions="*">
         <Grid.DataContext>
             <vm:HomeViewModel />
@@ -24,6 +26,13 @@
                           Click="ToggleButton_OnClick"
                           Icon="Play"
                           Label="Run" />
+            <AppBarButton x:Name="PagesButton"
+                          Click="PagesButton_OnClick"
+                          Label="Edit Pages">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE70F;" />
+                </AppBarButton.Icon>
+            </AppBarButton>
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Name="ConnectionButton"
                               Click="ConnectionButton_OnClick"
