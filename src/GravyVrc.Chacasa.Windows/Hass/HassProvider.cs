@@ -42,6 +42,13 @@ public class HassProvider : IHassProvider
         _configuration = configuration;
     }
 
+    public async Task<HassConfiguration> GetConfigurationAsync(CancellationToken cancellationToken = default)
+    {
+        if (_configuration is null)
+            await LoadConfigurationAsync(cancellationToken);
+        return _configuration;
+    }
+
     public async Task<Instance> CreateNewClientAsync(CancellationToken cancellationToken = default)
     {
         if (_configuration is null)

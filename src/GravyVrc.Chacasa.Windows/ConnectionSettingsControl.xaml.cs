@@ -20,9 +20,11 @@ public sealed partial class ConnectionSettingsControl : UserControl
         _hassProvider = App.Services.GetRequiredService<IHassProvider>();
     }
 
-    public void Initialize(ContentDialog dialogRef)
+    public async void Initialize(ContentDialog dialogRef)
     {
         _dialogRef = dialogRef;
+        var config = await _hassProvider.GetConfigurationAsync(_cancellationSource.Token);
+        this.RunOnUiThread(() => SetConfigurationModel(config));
     }
 
     private async void Test_OnClick(object sender, RoutedEventArgs e)
@@ -42,13 +44,16 @@ public sealed partial class ConnectionSettingsControl : UserControl
         this.RunOnUiThread(() => SetEnabled(true));
     }
 
-    private HassConfiguration GetConfigurationModel()
+    private HassConfiguration GetConfigurationModel() => new()
     {
-        return new()
-        {
-            Token = TokenTextBox.Text,
-            Url = UrlTextBox.Text
-        };
+        Token = TokenTextBox.Text,
+        Url = UrlTextBox.Text
+    };
+
+    private void SetConfigurationModel(HassConfiguration config)
+    {
+        TokenTextBox.Text = config.Token;
+        UrlTextBox.Text = config.Url;
     }
 
     private void Cancel_OnClick(object sender, RoutedEventArgs e)

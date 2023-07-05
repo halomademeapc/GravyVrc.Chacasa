@@ -12,5 +12,7 @@ public interface IHassProvider
 
     Task SaveConfigurationAsync(HassConfiguration configuration, CancellationToken cancellationToken = default);
 
+    Task<HassConfiguration> GetConfigurationAsync(CancellationToken cancellationToken = default);
+
     bool IsConfigured { get; }
 }

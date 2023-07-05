@@ -21,6 +21,7 @@ namespace GravyVrc.Chacasa.Windows
         private readonly PageService _pageService;
         private CancellationTokenSource? _cancellationTokenSource;
         private const int MaxScrollback = 50;
+        private bool IsRunning = false;
 
         public MainWindow()
         {
@@ -41,6 +42,15 @@ namespace GravyVrc.Chacasa.Windows
                 if (model.Messages.Count > MaxScrollback)
                     model.Messages.RemoveAt(0);
             });
+        }
+
+        private void ToggleButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (!IsRunning)
+                StartButton_OnClick(sender, e);
+            else
+                StopButton_OnClick(sender, e);
+            IsRunning = !IsRunning;
         }
 
         private async void StartButton_OnClick(object sender, RoutedEventArgs e)
@@ -101,8 +111,6 @@ namespace GravyVrc.Chacasa.Windows
                         @"🎵 {{state_attr('media_player.spotify_alex_griffith', 'media_title')}} - {{state_attr('media_player.spotify_alex_griffith', 'media_artist')}}"
                 }
             };
-            StartButton.IsEnabled = false;
-            StopButton.IsEnabled = true;
             await _pageService.ShowPages(testPages, _cancellationTokenSource.Token).ConfigureAwait(false);
         }
 
@@ -112,11 +120,9 @@ namespace GravyVrc.Chacasa.Windows
                 return;
             _cancellationTokenSource.Cancel();
             _cancellationTokenSource = null;
-            StartButton.IsEnabled = true;
-            StopButton.IsEnabled = false;
         }
 
-        private void TestButton_OnClick(object sender, RoutedEventArgs e)
+        private void ConnectionButton_OnClick(object sender, RoutedEventArgs e)
         {
             OpenConnectionSettings();
         }

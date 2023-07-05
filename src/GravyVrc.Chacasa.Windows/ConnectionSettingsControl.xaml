@@ -9,22 +9,25 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, Auto"
+    <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto"
           ColumnDefinitions="*"
           RowSpacing="14">
+        <TextBlock Grid.Row="0"
+            Text="Connection Settings" 
+                   Style="{StaticResource TitleTextBlockStyle}"/>
         <TextBox x:Name="UrlTextBox"
-                 Grid.Row="0"
+                 Grid.Row="1"
                  Header="Server URL"
                  Width="320"
                  PlaceholderText="http://homeassistant:8123" />
         <TextBox x:Name="TokenTextBox"
-                 Grid.Row="1"
+                 Grid.Row="2"
                  Header="User Token"
                  Width="320" />
         <StackPanel x:Name="SuccessMessage"
                     Orientation="Horizontal"
                     Visibility="Collapsed"
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Spacing="8">
             <FontIcon Foreground="Green" Glyph="&#xE73E;" />
             <TextBlock Foreground="Green">Connected successfully</TextBlock>
@@ -32,7 +35,7 @@
         <StackPanel x:Name="FailureMessage"
                     Orientation="Horizontal"
                     Visibility="Collapsed"
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Spacing="8">
             <FontIcon Foreground="Red" Glyph="&#xE7BA;" />
             <TextBlock Foreground="Red">Unable to connect</TextBlock>
@@ -40,7 +43,7 @@
         <StackPanel x:Name="LoadingMessage"
                     Orientation="Horizontal"
                     Visibility="Collapsed"
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Spacing="8">
             <ProgressRing IsActive="True"
                           Width="8"
@@ -49,12 +52,12 @@
         </StackPanel>
         <StackPanel x:Name="IdleMessage"
                     Orientation="Horizontal"
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Spacing="8">
             <FontIcon Foreground="Gray" Glyph="&#xE9CE;" />
             <TextBlock Foreground="Gray">Connection has not been validated</TextBlock>
         </StackPanel>
-        <Grid Grid.Row="3"
+        <Grid Grid.Row="4"
               ColumnDefinitions="*, *, *"
               ColumnSpacing="10"
               HorizontalAlignment="Stretch">
